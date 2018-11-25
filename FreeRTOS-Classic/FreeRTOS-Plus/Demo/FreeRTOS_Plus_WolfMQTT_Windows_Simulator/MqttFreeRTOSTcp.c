@@ -20,17 +20,96 @@
 
 /* Configuration */
 #define MQTT_BUF_SIZE	1024
-#define DEFAULT_MQTT_HOST       "iot.eclipse.org" /* broker.hivemq.com */
+#define DEFAULT_MQTT_HOST       "iot.eclipse.org" //"47.106.97.11" /* broker.hivemq.com */
 #define DEFAULT_CMD_TIMEOUT_MS  30000
 #define DEFAULT_CON_TIMEOUT_MS  5000
 #define DEFAULT_MQTT_QOS        MQTT_QOS_0
 #define DEFAULT_KEEP_ALIVE_SEC  60
+#define DEFAULT_USERNAME		"yasin"
+#define DEFAULT_USERPW			"testserver"
 #define DEFAULT_CLIENT_ID       "WolfMQTTClient"
 #define WOLFMQTT_TOPIC_NAME     "wolfMQTT/example/"
 #define DEFAULT_TOPIC_NAME      WOLFMQTT_TOPIC_NAME"testTopic"
 #define TLS_CA_CERT             "DSTRootCAX3.pem"
 
-
+//#ifdef ENABLE_MQTT_TLS
+////const unsigned char caCertBuf[] =
+/////* DigiCert Baltimore Root */
+////"-----BEGIN CERTIFICATE-----\r\n"
+////"MIIDdzCCAl+gAwIBAgIEAgAAuTANBgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJJ\r\n"
+////"RTESMBAGA1UEChMJQmFsdGltb3JlMRMwEQYDVQQLEwpDeWJlclRydXN0MSIwIAYD\r\n"
+////"VQQDExlCYWx0aW1vcmUgQ3liZXJUcnVzdCBSb290MB4XDTAwMDUxMjE4NDYwMFoX\r\n"
+////"DTI1MDUxMjIzNTkwMFowWjELMAkGA1UEBhMCSUUxEjAQBgNVBAoTCUJhbHRpbW9y\r\n"
+////"ZTETMBEGA1UECxMKQ3liZXJUcnVzdDEiMCAGA1UEAxMZQmFsdGltb3JlIEN5YmVy\r\n"
+////"VHJ1c3QgUm9vdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKMEuyKr\r\n"
+////"mD1X6CZymrV51Cni4eiVgLGw41uOKymaZN+hXe2wCQVt2yguzmKiYv60iNoS6zjr\r\n"
+////"IZ3AQSsBUnuId9Mcj8e6uYi1agnnc+gRQKfRzMpijS3ljwumUNKoUMMo6vWrJYeK\r\n"
+////"mpYcqWe4PwzV9/lSEy/CG9VwcPCPwBLKBsua4dnKM3p31vjsufFoREJIE9LAwqSu\r\n"
+////"XmD+tqYF/LTdB1kC1FkYmGP1pWPgkAx9XbIGevOF6uvUA65ehD5f/xXtabz5OTZy\r\n"
+////"dc93Uk3zyZAsuT3lySNTPx8kmCFcB5kpvcY67Oduhjprl3RjM71oGDHweI12v/ye\r\n"
+////"jl0qhqdNkNwnGjkCAwEAAaNFMEMwHQYDVR0OBBYEFOWdWTCCR1jMrPoIVDaGezq1\r\n"
+////"BE3wMBIGA1UdEwEB/wQIMAYBAf8CAQMwDgYDVR0PAQH/BAQDAgEGMA0GCSqGSIb3\r\n"
+////"DQEBBQUAA4IBAQCFDF2O5G9RaEIFoN27TyclhAO992T9Ldcw46QQF+vaKSm2eT92\r\n"
+////"9hkTI7gQCvlYpNRhcL0EYWoSihfVCr3FvDB81ukMJY2GQE/szKN+OMY3EU/t3Wgx\r\n"
+////"jkzSswF07r51XgdIGn9w/xZchMB5hbgF/X++ZRGjD8ACtPhSNzkE1akxehi/oCr0\r\n"
+////"Epn3o0WC4zxe9Z2etciefC7IpJ5OCBRLbf1wbWsaY71k5h+3zvDyny67G7fyUIhz\r\n"
+////"ksLi4xaNmjICq44Y3ekQEe5+NauQrz4wlHrQMz2nZQ/1/I6eYs9HRCwBXbsdtTLS\r\n"
+////"R9I4LtD+gdwyah617jzV/OeBHRnDJELqYzmp\r\n"
+////"-----END CERTIFICATE-----\r\n"
+////;
+//// MyTestServer
+//const unsigned char caCertBuf[] =
+//"-----BEGIN CERTIFICATE-----\r\n"
+//"MIIDpzCCAo+gAwIBAgIJAMGVRewzNkTFMA0GCSqGSIb3DQEBDQUAMGoxFzAVBgNV\r\n"
+//"BAMMDkFuIE1RVFQgYnJva2VyMRYwFAYDVQQKDA1Pd25UcmFja3Mub3JnMRQwEgYD\r\n"
+//"VQQLDAtnZW5lcmF0ZS1DQTEhMB8GCSqGSIb3DQEJARYSbm9ib2R5QGV4YW1wbGUu\r\n"
+//"bmV0MB4XDTE4MTEyMzA4MjgwMVoXDTMyMTExOTA4MjgwMVowajEXMBUGA1UEAwwO\r\n"
+//"QW4gTVFUVCBicm9rZXIxFjAUBgNVBAoMDU93blRyYWNrcy5vcmcxFDASBgNVBAsM\r\n"
+//"C2dlbmVyYXRlLUNBMSEwHwYJKoZIhvcNAQkBFhJub2JvZHlAZXhhbXBsZS5uZXQw\r\n"
+//"ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDxHHEWEIuz949x6kCno2Au\r\n"
+//"gETazyAb3AlB7leuukrmrAUuj0AQCyutJ5QquAohIZ3EZaiSV5HxFggIZl8z2uZ7\r\n"
+//"WzeeuRpxG5Imi8EAHtu850ybOyWz0yL9OXHs6lwoBtnEjLvX7C6040u2ADyNuwRn\r\n"
+//"pAICRneiEHZunrGTE2q4oLwqeP1y4on9SGmoR4NlclF0WhDse5IOADcpQT88BTZc\r\n"
+//"d2ZBSIZYK5+LjGJgOjL5mB74j+qtktQD4SxAxNndP7iKdTkEXYuVWiK2MT8pgvX8\r\n"
+//"U8AmtN9ocWdjvL0iTBIwBW3VBv+QQDkvrKZb0CwZ/EIf1imlN2lHYHyULnBq6NX/\r\n"
+//"AgMBAAGjUDBOMB0GA1UdDgQWBBT9OzQrhPqRcb/egvw4A+0/yLG9vjAfBgNVHSME\r\n"
+//"GDAWgBT9OzQrhPqRcb/egvw4A+0/yLG9vjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3\r\n"
+//"DQEBDQUAA4IBAQAEt2mdFKcC4vOvpcfOhTM6LK4WgmBQmMqY8LIDVzjuqvQUbulb\r\n"
+//"NaT7/DckSWGuUas8DDPviTu8IVmPN3Cjkal52s6n8cORTHJeRKrW+PMGtNxUjyqf\r\n"
+//"26QI67bL3dmvO1GQWsvNLQArjdivPFBThXa4DRQviIT2s9KK37NXOz0b/dCG1yOj\r\n"
+//"2x3QU8Jo1daRztJPQKBG+1ba3nVG2nwcb+MRrWmCnPEj1iw92EkP68Qd/hckYIhO\r\n"
+//"3YQ1V2GGmx+M2JaPg5xLk0KOsxcPtw1MxPObLZ14bJ8CQ7m+NOvMPBAeK8cdcHyT\r\n"
+//"+FTCboaVd+7zgfo5fq9b1jNpOVsAmjhVaKWt\r\n"
+//"-----END CERTIFICATE-----\r\n"
+//;
+//// DongMing-Server
+////const unsigned char caCertBuf[] =
+////"-----BEGIN CERTIFICATE-----\r\n"
+////"MIID0TCCArmgAwIBAgIJAPVG6FHon2kdMA0GCSqGSIb3DQEBCwUAMH4xCzAJBgNV\r\n"
+////"BAYTAkNOMREwDwYDVQQIDAhTaWNodWFuZzELMAkGA1UEBwwCQ0QxDjAMBgNVBAoM\r\n"
+////"BXVlc3RjMQwwCgYDVQQLDAMyMTgxEDAOBgNVBAMMBzAuMC4wLjAxHzAdBgkqhkiG\r\n"
+////"9w0BCQEWEDU2ODgyMjUwN0BxcS5jb20wIBcNMTgxMTIyMDkwMDMzWhgPMjExODEw\r\n"
+////"MjkwOTAwMzNaMH4xCzAJBgNVBAYTAkNOMREwDwYDVQQIDAhTaWNodWFuZzELMAkG\r\n"
+////"A1UEBwwCQ0QxDjAMBgNVBAoMBXVlc3RjMQwwCgYDVQQLDAMyMTgxEDAOBgNVBAMM\r\n"
+////"BzAuMC4wLjAxHzAdBgkqhkiG9w0BCQEWEDU2ODgyMjUwN0BxcS5jb20wggEiMA0G\r\n"
+////"CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDY0I9P51GZXSpAOJZu/4/E/IrBuwOg\r\n"
+////"fU2gwszNnY3Wf9uD6C1rYnNYji1jMImbv4o729VfEi/rQgc4EVwWkPvNlOYFKq4q\r\n"
+////"XVoL74sPD7UaWfLiFmsCEvc/pn60cIQtShQYKp12guEO1TKRXdjqVcvBbe+pzEWl\r\n"
+////"UY1zLrsKhCLbE010wvTLFm7qHdRYH9VbNktlqqxEtVvIkQd+dfUVDb7mBxLsJjZb\r\n"
+////"a6VWbPvaaKIGS5QZx7X6zswAb3Y2fnhCIYRRY/u6tPYcRXjVUz6RewarQVvv1cOA\r\n"
+////"YEuFfBNR18n7jIlAXFzr5nXBorGYD3EWYVRjXlk81mmGQBMO8+nlhFwFAgMBAAGj\r\n"
+////"UDBOMB0GA1UdDgQWBBTlWNm7WDHq+t38bU8hVrs3I1Lq4zAfBgNVHSMEGDAWgBTl\r\n"
+////"WNm7WDHq+t38bU8hVrs3I1Lq4zAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUA\r\n"
+////"A4IBAQBoKMJfWK769LZohzf87IDHgYjyASvCU0qr1vO6k+DSRpFWfc55pvVQL4N5\r\n"
+////"2c34iardcICjr8L+46guSvLFSRaDwVs2r5LcOo2L4/XTx7dD23J5Ai/2uG8v5YC2\r\n"
+////"DgxBEoqXzWUVj3tpdBX5ObxQfVTcWnGajkl/3OTDGMAho3p7L4PSLxAp5EHSO9mD\r\n"
+////"7KiPdwEHqglw3XPa98NMjJPEqDp5NQ8BipUK2p/K4ZdRX1qwgKITz0SC01Lcw+9U\r\n"
+////"mATJSAay0gxlPtCVSxv5yHe67qvwy+qVNaXq+o4DT1WaPNULQhQWiCKob3LGTwIX\r\n"
+////"ros2+RnMkZnhE5V2zdGUUnl8vlxl\r\n"
+////"-----END CERTIFICATE-----\r\n"
+////;
+//static const char* mTlsCaFile = caCertBuf;
+//#endif
 
 static MqttClient gMQTTC;
 static MqttNet gMQTTN;
@@ -40,7 +119,7 @@ static int mPacketIdLast;
 static const char* mTlsCaFile = TLS_CA_CERT;
 
 
-#define PRINT_BUFFER_SIZE 80
+#define PRINT_BUFFER_SIZE 1024
 static int mqtt_message_cb(MqttClient *client, MqttMessage *msg,
     byte msg_new, byte msg_done)
 {
@@ -122,10 +201,12 @@ static int mqtt_tls_cb(MqttClient* client)
 
     #if !defined(NO_CERT)
     #if !defined(NO_FILESYSTEM)
-        if (mTlsCaFile) {
-            /* Load CA certificate file */
-            rc = wolfSSL_CTX_load_verify_locations(client->tls.ctx, mTlsCaFile, NULL);
-        }
+		if (mTlsCaFile) {
+			/* Load CA certificate file */
+			rc = wolfSSL_CTX_load_verify_locations(client->tls.ctx, mTlsCaFile, NULL);
+			/*rc = wolfSSL_CTX_load_verify_buffer(client->tls.ctx, caCertBuf,
+				sizeof(caCertBuf), WOLFSSL_FILETYPE_PEM);*/
+		}
 
         /* If using a client certificate it can be loaded using: */
         /* rc = wolfSSL_CTX_use_certificate_file(client->tls.ctx,
@@ -234,8 +315,8 @@ void* vSecureMQTTClientTask( void *pvParameters )
 
                 connect.clean_session = 1;
                 connect.client_id = DEFAULT_CLIENT_ID;
-                //connect.username = DEFAULT_USERNAME;
-                //connect.password = DEFAULT_USERPW;
+                /*connect.username = DEFAULT_USERNAME;
+                connect.password = DEFAULT_USERPW;*/
 
                 XMEMSET(&lwt_msg, 0, sizeof(lwt_msg));
                 connect.enable_lwt = 0;
