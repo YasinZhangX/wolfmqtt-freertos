@@ -91,6 +91,7 @@
       <AdditionalDependencies>wpcap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\WinPCap</AdditionalLibraryDirectories>
       <Profile>false</Profile>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -137,8 +138,12 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\WolfMQTT\examples\azure\azureiothub.c" />
-    <ClCompile Include="..\..\Source\WolfMQTT\examples\mqttexample.c" />
+    <ClCompile Include="..\..\Source\WolfMQTT\examples\azure\azureiothub.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\WolfMQTT\examples\mqttexample.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\WolfSSL\wolfcrypt\src\aes.c" />
     <ClCompile Include="..\..\Source\WolfSSL\wolfcrypt\src\arc4.c" />
     <ClCompile Include="..\..\Source\WolfSSL\wolfcrypt\src\asm.c" />
@@ -227,6 +232,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="MqttFreeRTOSTcp.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
