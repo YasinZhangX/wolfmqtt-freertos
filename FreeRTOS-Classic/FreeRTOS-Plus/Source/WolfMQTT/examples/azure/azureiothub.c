@@ -26,6 +26,8 @@
 
 #include "wolfmqtt/mqtt_client.h"
 
+#define ENABLE_AZUREIOTHUB_EXAMPLE
+
 
 /* This example only works with ENABLE_MQTT_TLS (wolfSSL library) */
 /* Notes:
@@ -75,13 +77,13 @@ static int mStopRead = 0;
  * https://azure.microsoft.com/en-us/documentation/articles/iot-hub-sas-tokens/#using-sas-tokens-as-a-device
  */
 #define MAX_BUFFER_SIZE         1024    /* Maximum size for network read/write callbacks */
-#define AZURE_HOST              "wolfMQTT.azure-devices.net"
-#define AZURE_DEVICE_ID         "demoDevice"
-#define AZURE_KEY               "Vd8RHMAFPyRnAozkNCNFIPhVSffyZkB13r/YqiTWq5s=" /* Base64 Encoded */
+#define AZURE_HOST              "LifeBox.azure-devices.net"  //"wolfmqtt.azure-devices.net"  //"47.106.97.11" 
+#define AZURE_DEVICE_ID         "Lifebox" //"demoDevice"
+#define AZURE_KEY               "ITH9rA5A1o1uZbaKOxGRFK3WStEJSvCNrK0Hvythosk=" //"Vd8RHMAFPyRnAozkNCNFIPhVSffyZkB13r/YqiTWq5s=" /* Base64 Encoded */
 #define AZURE_QOS               MQTT_QOS_1 /* Azure IoT Hub does not yet support QoS level 2 */
 #define AZURE_KEEP_ALIVE_SEC    DEFAULT_KEEP_ALIVE_SEC
 #define AZURE_CMD_TIMEOUT_MS    DEFAULT_CMD_TIMEOUT_MS
-#define AZURE_TOKEN_EXPIRY_SEC  (60 * 60 * 1) /* 1 hour */
+#define AZURE_TOKEN_EXPIRY_SEC  (60 * 60 * 2) /* 2 hour */
 
 #define AZURE_DEVICE_NAME       AZURE_HOST"/devices/"AZURE_DEVICE_ID
 #define AZURE_USERNAME          AZURE_HOST"/"AZURE_DEVICE_ID
@@ -175,7 +177,7 @@ static int SasTokenCreate(char* sasToken, int sasTokenLen)
     byte base64Sig[WC_SHA256_DIGEST_SIZE*2];
     word32 base64SigLen = (word32)sizeof(base64Sig);
     byte encodedSig[WC_SHA256_DIGEST_SIZE*4];
-    long lTime;
+    long long lTime;
     Hmac hmac;
 
     if (sasToken == NULL) {
@@ -279,6 +281,9 @@ int azureiothub_test(MQTTCtx *mqttCtx)
             url_encoder_init();
 
             /* build sas token for password */
+			/*char* Token = "SharedAccessSignature sr=sr=Linbox.azure-devices.net \
+						&sig&sig=wK9JuFlenw7KWw6X0rddQWRhVKg%2FfiJIXAdE%2FBFaIKw%3D&skn=iothubowner&se=1542898416";
+			XMEMCPY(mqttCtx->buffer.sasToken, Token, (int)sizeof(mqttCtx->buffer.sasToken));*/
             rc = SasTokenCreate(mqttCtx->buffer.sasToken,
                 (int)sizeof(mqttCtx->buffer.sasToken));
             if (rc < 0) {
@@ -346,8 +351,8 @@ int azureiothub_test(MQTTCtx *mqttCtx)
             }
 
             /* Authentication */
-            mqttCtx->connect.username = AZURE_USERNAME;
-            mqttCtx->connect.password = mqttCtx->buffer.sasToken;
+			mqttCtx->connect.username = AZURE_USERNAME;
+			mqttCtx->connect.password = mqttCtx->buffer.sasToken;
 
             FALL_THROUGH;
         }
@@ -585,84 +590,31 @@ exit:
 }
 #endif /* ENABLE_AZUREIOTHUB_EXAMPLE */
 
+void* vSecureMQTTClientTask(void *pvParameters)
+{
+	int rc;
 
-/* so overall tests can pull in test function */
-#ifndef NO_MAIN_DRIVER
-    #ifdef USE_WINDOWS_API
-        #include <windows.h> /* for ctrl handler */
+	(void)pvParameters;
 
-        static BOOL CtrlHandler(DWORD fdwCtrlType)
-        {
-            if (fdwCtrlType == CTRL_C_EVENT) {
-            #ifdef ENABLE_AZUREIOTHUB_EXAMPLE
-                mStopRead = 1;
-            #endif
-                PRINTF("Received Ctrl+c");
-                return TRUE;
-            }
-            return FALSE;
-        }
-    #elif HAVE_SIGNAL
-        #include <signal.h>
-        static void sig_handler(int signo)
-        {
-            if (signo == SIGINT) {
-            #ifdef ENABLE_AZUREIOTHUB_EXAMPLE
-                mStopRead = 1;
-            #endif
-                PRINTF("Received SIGINT");
-            }
-        }
-    #endif
+	MQTTCtx mqttCtx;
 
-    int main(int argc, char** argv)
-    {
-        int rc;
-    #ifdef ENABLE_AZUREIOTHUB_EXAMPLE
-        MQTTCtx mqttCtx;
+	/* init defaults */
+	mqtt_init_ctx(&mqttCtx);
+	mqttCtx.app_name = "azureiothub";
+	mqttCtx.host = AZURE_HOST;
+	mqttCtx.qos = AZURE_QOS;
+	mqttCtx.keep_alive_sec = AZURE_KEEP_ALIVE_SEC;
+	mqttCtx.client_id = AZURE_DEVICE_ID;
+	mqttCtx.topic_name = AZURE_MSGS_TOPIC_NAME;
+	mqttCtx.cmd_timeout_ms = AZURE_CMD_TIMEOUT_MS;
+	mqttCtx.use_tls = 1;
 
-        /* init defaults */
-        mqtt_init_ctx(&mqttCtx);
-        mqttCtx.app_name = "azureiothub";
-        mqttCtx.host = AZURE_HOST;
-        mqttCtx.qos = AZURE_QOS;
-        mqttCtx.keep_alive_sec = AZURE_KEEP_ALIVE_SEC;
-        mqttCtx.client_id = AZURE_DEVICE_ID;
-        mqttCtx.topic_name = AZURE_MSGS_TOPIC_NAME;
-        mqttCtx.cmd_timeout_ms = AZURE_CMD_TIMEOUT_MS;
-        mqttCtx.use_tls = 1;
+	for (;;) {
+		rc = azureiothub_test(&mqttCtx);
+		PRINTF("azureiothub_test return: %s (%d)",
+			MqttClient_ReturnCodeToString(rc), rc);
+		vTaskDelay(5000);
+	}
 
-        /* parse arguments */
-        rc = mqtt_parse_args(&mqttCtx, argc, argv);
-        if (rc != 0) {
-            return rc;
-        }
-    #endif
-
-    #ifdef USE_WINDOWS_API
-        if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE) == FALSE) {
-            PRINTF("Error setting Ctrl Handler! Error %d", (int)GetLastError());
-        }
-    #elif HAVE_SIGNAL
-        if (signal(SIGINT, sig_handler) == SIG_ERR) {
-            PRINTF("Can't catch SIGINT");
-        }
-    #endif
-
-    #ifdef ENABLE_AZUREIOTHUB_EXAMPLE
-        do {
-            rc = azureiothub_test(&mqttCtx);
-        } while (rc == MQTT_CODE_CONTINUE);
-    #else
-        (void)argc;
-        (void)argv;
-
-        /* This example requires wolfSSL 3.9.1 or later with base64encode enabled */
-        PRINTF("Example not compiled in!");
-        rc = EXIT_FAILURE;
-    #endif
-
-        return (rc == 0) ? 0 : EXIT_FAILURE;
-    }
-
-#endif /* NO_MAIN_DRIVER */
+	return (rc == 0) ? 0 : EXIT_FAILURE;
+}

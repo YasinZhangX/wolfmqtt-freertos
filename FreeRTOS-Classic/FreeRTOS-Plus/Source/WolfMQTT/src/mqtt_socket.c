@@ -366,7 +366,8 @@ int MqttSocket_Connect(MqttClient *client, const char* host, word16 port,
         #endif
         }
 
-        rc = wolfSSL_connect(client->tls.ssl);
+        rc = wolfSSL_connect
+		(client->tls.ssl);
         if (rc != WOLFSSL_SUCCESS) {
             goto exit;
         }

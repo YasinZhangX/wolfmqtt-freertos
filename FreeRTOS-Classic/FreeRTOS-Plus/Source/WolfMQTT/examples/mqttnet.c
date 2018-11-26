@@ -173,7 +173,7 @@ static int NetConnect(void *context, const char* host, word16 port,
     int timeout_ms)
 {
     SocketContext *sock = (SocketContext*)context;
-	uint32_t a, b, c, d;
+	//uint32_t a = 0, b = 0, c = 0, d = 0;
 	uint32_t hostIp = 0;
     int rc = -1;
 
@@ -181,17 +181,17 @@ static int NetConnect(void *context, const char* host, word16 port,
     case SOCK_BEGIN:
 		hostIp = FreeRTOS_gethostbyname_a(host, NULL, 0, 0);
 		/*sscanf(host, "%u.%u.%u.%u", &a, &b, &c, &d);
-		a = (a << 24);
-		b = (b << 16);
-		c = (c << 8);
-		d = (d << 0);
-		hostIp = a | b | c | d;*/
+		d = (d << 24);
+		c = (c << 16);
+		b = (b << 8);
+		a = (a << 0);
+		hostIp = d | c | b | a;*/
 		if (hostIp == 0)
             break;
 
         sock->addr.sin_family = FREERTOS_AF_INET;
         sock->addr.sin_port = FreeRTOS_htons(port);
-        sock->addr.sin_addr = FreeRTOS_htons(hostIp);
+        sock->addr.sin_addr = hostIp;
 
         /* Create socket */
         sock->fd = FreeRTOS_socket(sock->addr.sin_family, FREERTOS_SOCK_STREAM,
