@@ -5,8 +5,9 @@
 #define _USER_SETTING_H_
 
 /* optional debugging */
-#if 0
+#if 1
 #define DEBUG_WOLFSSL
+#define WOLFMQTT_DEBUG_SOCKET
 #endif
 
 /* Use the FreeRTOS TCP API's */
@@ -38,6 +39,7 @@
 #define HAVE_POLY1305
 #define WOLFSSL_SHA384
 #define WOLFSSL_SHA512
+#define BUILD_TLS_RSA_WITH_AES_128_GCM_SHA256
 
 #define WOLFSSL_BASE64_ENCODE
 

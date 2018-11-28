@@ -391,6 +391,7 @@ void* vSecureMQTTClientTask( void *pvParameters )
                         publish.topic_name,
                         MqttClient_ReturnCodeToString(rc), rc);
                 }
+				vTaskDelay(1000);
                 break;
             }
             default:
